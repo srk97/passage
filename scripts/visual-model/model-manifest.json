@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "model": {
+    "id": "timm/PE-Core-S-16-384",
+    "revision": "3249a38eb1c432ec19231c6fe1774acb6a4e4efe",
+    "license": "Apache-2.0",
+    "source_repository": "https://huggingface.co/timm/PE-Core-S-16-384"
+  },
+  "implementation": {
+    "repository": "https://github.com/facebookresearch/perception_models",
+    "revision": "3e352cca660658d4b5c90f42a7808b11469e4c66"
+  },
+  "assets": [
+    {
+      "path": "open_clip_model.safetensors",
+      "url": "https://huggingface.co/timm/PE-Core-S-16-384/resolve/3249a38eb1c432ec19231c6fe1774acb6a4e4efe/open_clip_model.safetensors",
+      "bytes": 348787644,
+      "sha256": "440da04ea6f08f5ce07b2e7118735660c7a71f981bdf3edde8e8b15f28d660b0"
+    },
+    {
+      "path": "open_clip_config.json",
+      "url": "https://huggingface.co/timm/PE-Core-S-16-384/resolve/3249a38eb1c432ec19231c6fe1774acb6a4e4efe/open_clip_config.json",
+      "bytes": 598,
+      "sha256": "2e53cd74e5cf6201f4355bf8bff6f486afa2c9cf9c8f0382e190f3ee1a80174b"
+    },
+    {
+      "path": "bpe_simple_vocab_16e6.txt.gz",
+      "url": "https://raw.githubusercontent.com/facebookresearch/perception_models/3e352cca660658d4b5c90f42a7808b11469e4c66/core/vision_encoder/bpe_simple_vocab_16e6.txt.gz",
+      "bytes": 1356917,
+      "sha256": "924691ac288e54409236115652ad4aa250f48203de50a9e4722a6ecd48d6804a"
+    },
+    {
+      "path": "LICENSE.PE",
+      "url": "https://raw.githubusercontent.com/facebookresearch/perception_models/3e352cca660658d4b5c90f42a7808b11469e4c66/LICENSE.PE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  ]
+}

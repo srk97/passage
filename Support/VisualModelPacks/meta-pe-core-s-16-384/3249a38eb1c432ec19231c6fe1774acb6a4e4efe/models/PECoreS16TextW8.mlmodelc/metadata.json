@@ -1,0 +1,97 @@
+[
+  {
+    "shortDescription" : "Normalized 512-dimensional PE-Core-S-16-384 text encoder",
+    "metadataOutputVersion" : "3.0",
+    "outputSchema" : [
+      {
+        "hasShapeFlexibility" : "0",
+        "isOptional" : "0",
+        "dataType" : "Float16",
+        "formattedType" : "MultiArray (Float16 1 × 512)",
+        "shortDescription" : "",
+        "shape" : "[1, 512]",
+        "name" : "embedding",
+        "type" : "MultiArray"
+      }
+    ],
+    "version" : "3249a38eb1c4",
+    "modelParameters" : [
+
+    ],
+    "author" : "Meta (source model); Chronicle conversion pipeline",
+    "specificationVersion" : 8,
+    "storagePrecision" : "Mixed (Float16, Int8)",
+    "license" : "Apache-2.0; see LICENSE.PE",
+    "mlProgramOperationTypeHistogram" : {
+      "Ios17.reduceArgmax" : 1,
+      "Ios16.reduceL2Norm" : 1,
+      "Ios17.reshape" : 108,
+      "Ios16.softmax" : 12,
+      "Ios17.matmul" : 24,
+      "Ios17.transpose" : 84,
+      "Ios17.maximum" : 1,
+      "Select" : 4,
+      "Ios17.expandDims" : 12,
+      "Ios17.add" : 41,
+      "Tile" : 1,
+      "Ios17.sliceByIndex" : 36,
+      "Ios17.gatherNd" : 1,
+      "Ios17.squeeze" : 12,
+      "Ios17.gather" : 1,
+      "Ios17.layerNorm" : 25,
+      "Ios16.constexprAffineDequantize" : 49,
+      "Ios16.gelu" : 12,
+      "Ios17.cast" : 4,
+      "Ios17.realDiv" : 1,
+      "Ios17.linear" : 49,
+      "Stack" : 1,
+      "Ios17.greaterEqual" : 4,
+      "Ios17.mul" : 12
+    },
+    "computePrecision" : "Mixed (Float16, Int16, Int32)",
+    "stateSchema" : [
+
+    ],
+    "isUpdatable" : "0",
+    "availability" : {
+      "macOS" : "14.0",
+      "tvOS" : "17.0",
+      "visionOS" : "1.0",
+      "watchOS" : "10.0",
+      "iOS" : "17.0",
+      "macCatalyst" : "17.0"
+    },
+    "modelType" : {
+      "name" : "MLModelType_mlProgram"
+    },
+    "inputSchema" : [
+      {
+        "hasShapeFlexibility" : "0",
+        "isOptional" : "0",
+        "dataType" : "Int32",
+        "formattedType" : "MultiArray (Int32 1 × 32)",
+        "shortDescription" : "",
+        "shape" : "[1, 32]",
+        "name" : "tokens",
+        "type" : "MultiArray"
+      }
+    ],
+    "userDefinedMetadata" : {
+      "chronicle.tower" : "text",
+      "chronicle.output_normalized" : "true",
+      "chronicle.quantization_weight_threshold" : "2048",
+      "com.github.apple.coremltools.version" : "9.0",
+      "com.github.apple.coremltools.conversion_date" : "2026-07-28",
+      "chronicle.model_revision" : "3249a38eb1c432ec19231c6fe1774acb6a4e4efe",
+      "chronicle.weight_storage" : "hybrid-int8-linear-conv-fp16-embeddings",
+      "chronicle.model_id" : "timm\/PE-Core-S-16-384",
+      "com.github.apple.coremltools.source_dialect" : "TorchScript",
+      "com.github.apple.coremltools.source" : "torch==2.7.0",
+      "chronicle.minimum_deployment_target" : "macOS 14",
+      "chronicle.converter" : "coremltools 9.0",
+      "chronicle.source_manifest_sha256" : "c620bf159fdfa39164549c5e4e7d12f92a64650fe8ac51ecb8e9492cf7bee507"
+    },
+    "generatedClassName" : "PECoreS16TextW8",
+    "method" : "predict"
+  }
+]
