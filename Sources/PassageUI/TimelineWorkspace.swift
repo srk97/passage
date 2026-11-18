@@ -949,8 +949,16 @@ private struct MemoryCurrent: View {
     }
 
     private func setWholeDayBrowsing(_ visible: Bool) {
-        cancelScrub()
-        browsesWholeDay = visible
+        // An accessibility press on the segmented control can be delivered
+        // while AppKit is mid display-cycle flush. Mutating SwiftUI state
+        // synchronously there makes NSHostingView request a constraint update
+        // inside the flush, which AppKit treats as an uncaught exception and
+        // crashes. Deferring one runloop turn keeps the mutation outside the
+        // flush for every delivery path; a pointer click behaves identically.
+        DispatchQueue.main.async {
+            cancelScrub()
+            browsesWholeDay = visible
+        }
     }
 
     private func settleFrozenRailIfIdle() {
