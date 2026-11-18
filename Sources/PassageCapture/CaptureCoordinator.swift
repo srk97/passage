@@ -674,14 +674,20 @@ public actor CaptureCoordinator {
     private func runRetentionSweepIfNeeded(now: Date) async throws -> Bool {
         guard now.timeIntervalSince(lastRetentionSweep) >= 3_600 else { return false }
         lastRetentionSweep = now
-        let cutoff = Calendar.current.date(
-            byAdding: .day,
-            value: -retentionPolicy.maximumAgeDays,
-            to: now
-        ) ?? now.addingTimeInterval(-Double(retentionPolicy.maximumAgeDays) * 86_400)
+        // No age limit means the media cap is the only governor, so the age
+        // sweep is skipped entirely rather than run with a synthetic cutoff.
+        let cutoff: Date? = retentionPolicy.maximumAgeDays.map { ageDays in
+            Calendar.current.date(
+                byAdding: .day,
+                value: -ageDays,
+                to: now
+            ) ?? now.addingTimeInterval(-Double(ageDays) * 86_400)
+        }
 
         var statistics = try await repository.statistics()
-        let ageMutationExpected = statistics.oldestCapture.map { $0 < cutoff } ?? false
+        let ageMutationExpected = cutoff.map { cutoff in
+            statistics.oldestCapture.map { $0 < cutoff } ?? false
+        } ?? false
         let storageMutationExpected = statistics.mediaBytes
             > retentionPolicy.maximumMediaBytes
         let boundaryHandler = (ageMutationExpected || storageMutationExpected)
@@ -692,12 +698,15 @@ public actor CaptureCoordinator {
         }
 
         do {
-            let frameCountBeforeAgeSweep = statistics.frameCount
-            let paths = try await repository.deleteFrames(olderThan: cutoff)
-            await media.delete(relativePaths: paths)
-            statistics = try await repository.statistics()
-            var durableStateChanged = !paths.isEmpty
-                || statistics.frameCount < frameCountBeforeAgeSweep
+            var durableStateChanged = false
+            if let cutoff {
+                let frameCountBeforeAgeSweep = statistics.frameCount
+                let paths = try await repository.deleteFrames(olderThan: cutoff)
+                await media.delete(relativePaths: paths)
+                statistics = try await repository.statistics()
+                durableStateChanged = !paths.isEmpty
+                    || statistics.frameCount < frameCountBeforeAgeSweep
+            }
 
             // Enforce the user-visible storage ceiling oldest-first. The loop is
             // bounded by actual progress: every pass must remove at least one

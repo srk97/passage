@@ -44,9 +44,11 @@ saves still images, never video.
 Sampling slows down on battery power, in Low Power Mode, and under thermal
 pressure. Capture stops while you are inactive and resumes when you return.
 
-Old data is deleted automatically. The defaults keep 30 days of history and up
-to 20 GB of images. When the size limit is reached, Passage deletes the oldest
-images but keeps their text searchable. Both limits are adjustable.
+By default Passage keeps your history for as long as your disk allows, with
+images capped at 20 GB. When the cap is reached, Passage deletes the oldest
+images but keeps their text searchable. You can also set an age limit of 1 to
+365 days; history older than that limit is deleted. Both settings are
+adjustable.
 
 ## What it never saves
 

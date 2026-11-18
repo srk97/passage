@@ -21,7 +21,7 @@ The current macOS vertical slice provides:
 - one shared Context Handoff sheet for Recall moments and Sessions. It previews the exact source-cited Markdown or canonical JSON, exact artifact bytes, apps/sites, included text, coverage, and omissions before an explicit copy. Its dedicated payload cannot represent screenshots, media paths, pixel geometry, embedding vectors, full URL paths, or window titles. Whole mixed-sensitive sessions are omitted. Copy revalidates every source and records a durable receipt before touching the clipboard; lock, deletion, retention, source change, or receipt failure fails closed;
 - application and focused-domain exclusions, Accessibility-reported secure-text-field suppression when App Context access is granted, sensitive-context heuristics, cursor hiding, and fail-closed behavior when an excluded-domain rule exists but a focused browser URL is unavailable;
 - encrypted index, media, thumbnails, privacy preferences, and agent access receipts, plus a first dormant `MemorySegmentIndex` correctness slice. Its explicit crash-safe rebuild creates deterministic app/domain/session segments of at most 64 exact frames, validates same-frame canonical FTS matches, applies whole-session agent privacy before pagination, and binds cursors to scope/revision; an absent, building, dirty, or stale generation fails closed. It has no scheduler, consumer cutover, or million-row benchmark yet;
-- age- and media-size-based retention, text-preserving image expiry, and a confirmed delete-all history action that also clears cached session intelligence and answers;
+- media-size-based retention with text-preserving image expiry, an optional age limit (off by default; the media cap is then the only governor), and a confirmed delete-all history action that also clears cached session intelligence and answers;
 - optional, explicit per-session intelligence through provider abstractions. The current OpenAI Responses implementation defaults to `gpt-5.6-luna` with low reasoning, sends bounded text only with `store: false`, validates strict source-cited JSON for both briefs and one-session questions, and caches valid results locally under purpose-separated AES-GCM keys;
 - a default-deny, audited service 0.9.0 / protocol-v5 local agent boundary with discovery, a preferred multimodal Memory Capsule, metadata-only local visual search, a count/byte-bounded text bundle, and CLI search, recent results, sessions, session-filtered retrieval, frame detail, and statistics;
 - an Access History view where both explicit handoff receipts and local-agent access receipts can be inspected and cleared;
@@ -49,7 +49,7 @@ Remembering/paused intent is durable and distinct from runtime status. Choosing 
 | Visual change threshold | Difference-hash distance of 4 on a 64-bit fingerprint |
 | Capture area | Focused window only by default; full display is an explicit setting |
 | Inactivity pause | After 5 minutes by default; selectable as 5, 10, 30 minutes, or never |
-| Retention age | 30 days; stored preference supports 1–365 days |
+| Retention age | No age limit by default (stored as 0); an optional limit supports 1–365 days |
 | Maximum image storage | 20 GiB; stored preference supports 1–500 GiB |
 | Preserve OCR after media expiry | Yes by default; old visuals can expire while searchable text/provenance remains |
 | Cursor in saved frames | Hidden by default |

@@ -13,8 +13,18 @@ struct PrivacyPreferencesStoreTests {
         #expect(value.captureFocusedWindowOnly)
         #expect(value.pauseAfterInactivityMinutes == 5)
         #expect(value.capturePolicy.inactivityPause == .seconds(300))
-        #expect(value.retentionDays == 30)
+        #expect(value.retentionDays == 0)
+        #expect(value.retentionPolicy.maximumAgeDays == nil)
         #expect(value.retentionPolicy.preserveTextAfterMediaExpiry)
+    }
+
+    @Test("Retention days normalize: 0 keeps forever, other values clamp to 1-365")
+    func retentionNormalization() {
+        #expect(PrivacyPreferences(retentionDays: 0).retentionDays == 0)
+        #expect(PrivacyPreferences(retentionDays: -3).retentionDays == 1)
+        #expect(PrivacyPreferences(retentionDays: 400).retentionDays == 365)
+        #expect(PrivacyPreferences(retentionDays: 14).retentionPolicy.maximumAgeDays == 14)
+        #expect(PrivacyPreferences(retentionDays: 0).retentionPolicy.maximumAgeDays == nil)
     }
 
     @Test("Domains and applications normalize and deduplicate")

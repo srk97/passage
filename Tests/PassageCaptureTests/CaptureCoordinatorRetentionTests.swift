@@ -75,6 +75,19 @@ struct CaptureCoordinatorRetentionTests {
         #expect(await recorder.snapshot().isEmpty)
     }
 
+    @Test("No age limit never runs the age sweep")
+    func unlimitedAgeSkipsAgeSweep() async throws {
+        // The stub throws from deleteFrames(olderThan:), so a successful
+        // capture proves the age sweep was never invoked.
+        let fixture = try Fixture(retentionChange: .failsAgeSweep, maximumAgeDays: nil)
+        defer { fixture.cleanUp() }
+
+        _ = try await fixture.capture()
+
+        #expect(fixture.events.snapshot().filter { $0 == .persisted }.count == 1)
+        #expect(await fixture.repository.retentionAttemptCount == 0)
+    }
+
     @Test("A failed retention sweep still closes the mutation boundary")
     func failedSweepClosesBoundary() async throws {
         let fixture = try Fixture(retentionChange: .failsAgeSweep)
@@ -112,7 +125,7 @@ struct CaptureCoordinatorRetentionTests {
         let repository: RetentionFrameRepository
         let coordinator: CaptureCoordinator
 
-        init(retentionChange: RetentionChange) throws {
+        init(retentionChange: RetentionChange, maximumAgeDays: Int? = 1) throws {
             root = FileManager.default.temporaryDirectory
                 .appendingPathComponent("PassageCaptureRetentionTests-\(UUID().uuidString)")
             let paths = PassagePaths(root: root)
@@ -135,7 +148,7 @@ struct CaptureCoordinatorRetentionTests {
                 media: MediaStore(paths: paths, vaultKey: key),
                 repository: repository,
                 retentionPolicy: RetentionPolicy(
-                    maximumAgeDays: 1,
+                    maximumAgeDays: maximumAgeDays,
                     maximumMediaBytes: 512 * 1_024 * 1_024
                 ),
                 hostBundleIdentifier: "app.passage.tests"

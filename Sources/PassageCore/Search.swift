@@ -175,16 +175,18 @@ public struct RecallFacets: Codable, Hashable, Sendable {
 }
 
 public struct RetentionPolicy: Codable, Hashable, Sendable {
-    public var maximumAgeDays: Int
+    /// `nil` means no age limit: history is governed only by the media cap,
+    /// which deletes the oldest images while text can remain searchable.
+    public var maximumAgeDays: Int?
     public var maximumMediaBytes: Int64
     public var preserveTextAfterMediaExpiry: Bool
 
     public init(
-        maximumAgeDays: Int = 30,
+        maximumAgeDays: Int? = nil,
         maximumMediaBytes: Int64 = 20 * 1_024 * 1_024 * 1_024,
         preserveTextAfterMediaExpiry: Bool = true
     ) {
-        self.maximumAgeDays = max(maximumAgeDays, 1)
+        self.maximumAgeDays = maximumAgeDays.map { max($0, 1) }
         self.maximumMediaBytes = max(maximumMediaBytes, 512 * 1_024 * 1_024)
         self.preserveTextAfterMediaExpiry = preserveTextAfterMediaExpiry
     }

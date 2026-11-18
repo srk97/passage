@@ -27,7 +27,7 @@ public struct PrivacyPreferences: Codable, Equatable, Sendable {
     public init(
         captureIntervalMilliseconds: Int = 2_000,
         unchangedHeartbeatSeconds: Int = 30,
-        retentionDays: Int = 30,
+        retentionDays: Int = 0,
         maximumStorageGigabytes: Int = 20,
         preserveTextAfterImageExpiry: Bool = true,
         hideCursor: Bool = true,
@@ -39,7 +39,7 @@ public struct PrivacyPreferences: Codable, Equatable, Sendable {
     ) {
         self.captureIntervalMilliseconds = Self.allowedCaptureInterval(captureIntervalMilliseconds)
         self.unchangedHeartbeatSeconds = min(max(unchangedHeartbeatSeconds, 10), 300)
-        self.retentionDays = min(max(retentionDays, 1), 365)
+        self.retentionDays = Self.allowedRetentionDays(retentionDays)
         self.maximumStorageGigabytes = min(max(maximumStorageGigabytes, 1), 500)
         self.preserveTextAfterImageExpiry = preserveTextAfterImageExpiry
         self.hideCursor = hideCursor
@@ -76,7 +76,7 @@ public struct PrivacyPreferences: Codable, Equatable, Sendable {
 
     public var retentionPolicy: RetentionPolicy {
         RetentionPolicy(
-            maximumAgeDays: retentionDays,
+            maximumAgeDays: retentionDays == 0 ? nil : retentionDays,
             maximumMediaBytes: Int64(maximumStorageGigabytes) * 1_024 * 1_024 * 1_024,
             preserveTextAfterMediaExpiry: preserveTextAfterImageExpiry
         )
@@ -104,7 +104,7 @@ public struct PrivacyPreferences: Codable, Equatable, Sendable {
     public mutating func normalize() {
         captureIntervalMilliseconds = Self.allowedCaptureInterval(captureIntervalMilliseconds)
         unchangedHeartbeatSeconds = min(max(unchangedHeartbeatSeconds, 10), 300)
-        retentionDays = min(max(retentionDays, 1), 365)
+        retentionDays = Self.allowedRetentionDays(retentionDays)
         maximumStorageGigabytes = min(max(maximumStorageGigabytes, 1), 500)
         pauseAfterInactivityMinutes = Self.allowedInactivityMinutes(pauseAfterInactivityMinutes)
         excludedApplications = Self.normalizedApplications(excludedApplications)
@@ -119,6 +119,12 @@ public struct PrivacyPreferences: Codable, Equatable, Sendable {
         guard let host = URL(string: candidate)?.host(percentEncoded: false) else { return nil }
         let withoutWWW = host.hasPrefix("www.") ? String(host.dropFirst(4)) : host
         return withoutWWW.trimmingCharacters(in: CharacterSet(charactersIn: "."))
+    }
+
+    /// 0 keeps history with no age limit, matching the inactivity-pause
+    /// convention where 0 means "never".
+    private static func allowedRetentionDays(_ value: Int) -> Int {
+        value == 0 ? 0 : min(max(value, 1), 365)
     }
 
     private static func allowedCaptureInterval(_ value: Int) -> Int {
@@ -176,7 +182,7 @@ public struct PrivacyPreferences: Codable, Equatable, Sendable {
         self.init(
             captureIntervalMilliseconds: try container.decodeIfPresent(Int.self, forKey: .captureIntervalMilliseconds) ?? 2_000,
             unchangedHeartbeatSeconds: try container.decodeIfPresent(Int.self, forKey: .unchangedHeartbeatSeconds) ?? 30,
-            retentionDays: try container.decodeIfPresent(Int.self, forKey: .retentionDays) ?? 30,
+            retentionDays: try container.decodeIfPresent(Int.self, forKey: .retentionDays) ?? 0,
             maximumStorageGigabytes: try container.decodeIfPresent(Int.self, forKey: .maximumStorageGigabytes) ?? 20,
             preserveTextAfterImageExpiry: try container.decodeIfPresent(Bool.self, forKey: .preserveTextAfterImageExpiry) ?? true,
             hideCursor: try container.decodeIfPresent(Bool.self, forKey: .hideCursor) ?? true,

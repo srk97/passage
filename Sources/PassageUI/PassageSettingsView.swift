@@ -222,6 +222,7 @@ public struct PassageSettingsView: View {
                     get: { model.privacyPreferences.retentionDays },
                     set: { value in model.setRetention(days: value) }
                 )) {
+                    Text("Forever").tag(0)
                     Text("7 days").tag(7)
                     Text("14 days").tag(14)
                     Text("30 days").tag(30)
